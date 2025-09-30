@@ -49,6 +49,26 @@ app.post('/api/createuser', async (req, res) => {
     }
 })
 
+//Login check
+//backend working fine
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await userModel.findOne({ username })
+        if (!user) return res.status(404).json({ success: false, message: 'user not found' })
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ success: false, message: `Wrong password` })
+
+        const token = jwt.sign({ username }, 'secret')
+        //http is for security purpose , so that no one can access our cookie
+        res.cookie('username', token, { httpOnly: true })
+        res.json({ success: true, message: 'Logged in successfully', username: user.username, name:user.name });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+})
+
 
 app.post('/api/createblog', async (req, res) => {
     const { authorName, authorUsername, title, content } = req.body
@@ -56,7 +76,7 @@ app.post('/api/createblog', async (req, res) => {
         authorName, authorUsername, title, content
     })
     await newBlog.save()
-    res.status(200).json({success:true,msg:'Blog posted'})
+    res.status(200).json({ success: true, msg: 'Blog posted' })
 })
 
 
