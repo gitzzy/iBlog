@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function Signup() {
   const [name, setName] = useState(null);
   const [user, setUser] = useState(null);
   const [pass, setPass] = useState(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [message, setMessage] = useState(""); // new: for feedback
 
   const handleSignup = () => {
     const data = {
@@ -19,13 +20,27 @@ export default function Signup() {
     axios
       .post(`${backurl}/api/createuser`, data)
       .then((response) => {
-        // handle success
-        navigate('/')
+        setMessage(response.data.message);
+
+        setTimeout(() => {
+          setUser("");
+          setMessage("");
+          if (!response.data.success) setUser(""); 
+        }, 2000);
+
+        if (response.data.success) {
+          setTimeout(() => navigate("/"), 2000); 
+        }
       })
       .catch((error) => {
-        // handle error
-        console.error("Signup failed:", error.response.data);
-        alert('failed to create account')
+        setMessage(
+          error.response?.data?.message || "Signup failed. Try again later"
+        );
+
+        // fade message after 2s
+        setTimeout(() => {
+          setMessage("");
+        }, 1000);
       });
   };
 
@@ -35,6 +50,12 @@ export default function Signup() {
         <div className="flex justify-center text-[32px]">
           Create Your Account
         </div>
+
+        {/* feedback message */}
+        {message && (
+          <div className="flex justify-center text-red-500">{message}</div>
+        )}
+
         <div className="flex justify-center items-center gap-2">
           Name :{" "}
           <input

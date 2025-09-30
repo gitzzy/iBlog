@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -5,10 +6,12 @@ export default function Login() {
     const [user,setUser] = useState(null)
     const [pass,setPass] = useState(null)
 
-    
+    const backurl = "http://localhost:5001";
 
     const handleSignin = () => {
-        
+        axios.post(`${backurl}/api/login`).
+        then()
+        .catch((err) => alert("Signup failed:", error.response.data))
     }
 
   return (

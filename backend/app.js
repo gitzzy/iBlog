@@ -2,8 +2,10 @@ import express from 'express'
 import connectDB from './config/dbconnection.js'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import {blogModel} from './models/BlogModel.js'
-import {userModel} from './models/UserModel.js'
+import { blogModel } from './models/BlogModel.js'
+import { userModel } from './models/UserModel.js'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 dotenv.config();
 const app = express()
@@ -14,20 +16,50 @@ app.use(express.json())
 
 connectDB()
 
-app.get('/',(req,res) => {
+app.get('/', (req, res) => {
     res.send('Backend')
 })
 
-app.post('/api/createuser',async(req,res) => {
-    const {name,username,password} = req.body
-    const newUser = new userModel({
-        name,username,password
-    })
-    await newUser.save()
-    res.send(`new user created`)
+//Working fine 
+app.post('/api/createuser', async (req, res) => {
+    try {
+        const { name, username, password } = req.body
+        const exist = await userModel.findOne({ username })
+        if (exist) {
+            return res.status(400).json({ success: false, message: 'Username already exists' })
+        } else {
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(password, salt, async (err, hash) => {
+                    const newUser = new userModel({
+                        name, username, password: hash
+                    })
+                    await newUser.save()
+                    let token = jwt.sign({ username }, 'secret')
+                    res.cookie('username', token)
+                    res.json({
+                        "success": true,
+                        "message": "User created successfully"
+                    })
+                })
+            })
+        }
+
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
 })
 
 
-app.listen(port,() => {
+app.post('/api/createblog', async (req, res) => {
+    const { authorName, authorUsername, title, content } = req.body
+    const newBlog = new blogModel({
+        authorName, authorUsername, title, content
+    })
+    await newBlog.save()
+    res.status(200).json({success:true,msg:'Blog posted'})
+})
+
+
+app.listen(port, () => {
     console.log('Backend is running')
 })
