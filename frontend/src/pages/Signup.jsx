@@ -7,7 +7,7 @@ export default function Signup() {
   const [user, setUser] = useState(null);
   const [pass, setPass] = useState(null);
   const navigate = useNavigate();
-  const [message, setMessage] = useState(""); // new: for feedback
+  const [message, setMessage] = useState("");
 
   const handleSignup = () => {
     const data = {
@@ -37,7 +37,7 @@ export default function Signup() {
           error.response?.data?.message || "Signup failed. Try again later"
         );
 
-        // fade message after 2s
+        // fade message after 2 sec
         setTimeout(() => {
           setMessage("");
         }, 1000);
