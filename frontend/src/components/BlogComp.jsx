@@ -8,6 +8,9 @@ export default function BlogComp({ blog }) {
   const navigate = useNavigate();
   const backurl = "http://localhost:5001";
 
+  // Get logged-in user from localStorage
+  const loggedInUser = localStorage.getItem("user");
+
   // Helper function for time ago
   function timeAgo(dateString) {
     const now = new Date();
@@ -41,7 +44,7 @@ export default function BlogComp({ blog }) {
         .then((res) => {
           if (res.data.success) {
             alert("Blog deleted successfully!");
-            navigate(0); // reload current page to update blog list
+            navigate(0); 
           }
         })
         .catch((err) => {
@@ -68,37 +71,36 @@ export default function BlogComp({ blog }) {
             </div>
           </div>
 
-          {/* Options menu */}
-          <div className="relative" ref={dropdownRef}>
-            <div
-              onClick={() => setOpen(!open)}
-              className="cursor-pointer px-2 py-1"
-            >
-              •••
-            </div>
-
-            {open && (
-              <div className="absolute top-full right-0 mt-2 bg-zinc-800 shadow-lg rounded-md w-40 py-2 border">
-                <div className="px-4 py-2 cursor-pointer text-white">
-                  View Profile
-                </div>
-
-                {/* Edit link with blog ID */}
-                <Link to={`/api/editblog/${blog._id}`}>
-                  <div className="px-4 py-2 cursor-pointer text-white">
-                    Edit
-                  </div>
-                </Link>
-
-                <div
-                  className="px-4 py-2 cursor-pointer text-red-500"
-                  onClick={() => handleDelete(blog._id)}
-                >
-                  Delete
-                </div>
+          {/* Options menu - only visible if the  user is owner of the blog */}
+          {loggedInUser === blog.authorUsername && (
+            <div className="relative" ref={dropdownRef}>
+              <div
+                onClick={() => setOpen(!open)}
+                className="cursor-pointer px-2 py-1"
+              >
+                •••
               </div>
-            )}
-          </div>
+
+              {open && (
+                <div className="absolute top-full right-0 mt-2 bg-zinc-800 shadow-lg rounded-md w-40 py-2 border">
+                  <div className="px-4 py-2 cursor-pointer text-white">
+                    View Profile
+                  </div>
+
+                  <Link to={`/api/editblog/${blog._id}`}>
+                    <div className="px-4 py-2 cursor-pointer text-white">Edit</div>
+                  </Link>
+
+                  <div
+                    className="px-4 py-2 cursor-pointer text-red-500"
+                    onClick={() => handleDelete(blog._id)}
+                  >
+                    Delete
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Blog content */}

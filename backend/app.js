@@ -100,31 +100,46 @@ app.get('/api/myblog/:user', async (req, res) => {
     }
 })
 
+//this is to get blogby id using it to fill the form for editing
 app.get("/api/blog/:id", async (req, res) => {
-  try {
-    const blog = await blogModel.findById(req.params.id);
-    if (!blog)
-      return res.status(404).json({ success: false, message: "Blog not found" });
-    res.status(200).json({ success: true, blog });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+    try {
+        const blog = await blogModel.findById(req.params.id);
+        if (!blog)
+            return res.status(404).json({ success: false, message: "Blog not found" });
+        res.status(200).json({ success: true, blog });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
+//Editing the blog
 app.put("/api/updateblog/:id", async (req, res) => {
-  try {
-    const updatedBlog = await blogModel.findByIdAndUpdate(
-      req.params.id,
-      { $set: req.body },
-      { new: true }
-    );
-    if (!updatedBlog) return res.status(404).json({ success: false, message: "Blog not found" });
-    res.status(200).json({ success: true, blog: updatedBlog });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
+    try {
+        const updatedBlog = await blogModel.findByIdAndUpdate(
+            req.params.id,
+            { $set: req.body },
+            { new: true }
+        );
+        if (!updatedBlog) return res.status(404).json({ success: false, message: "Blog not found" });
+        res.status(200).json({ success: true, blog: updatedBlog });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
 });
 
+app.delete('/api/deleteblog/:id', async (req, res) => {
+    try {
+        const blogid = req.params.id
+        const blog = await blogModel.findById(blogid)
+        if (!blog) {
+            return res.status(404).json({ success: false, message: "Blog not found" });
+        }
+        await blogModel.findByIdAndDelete(blogid);
+        res.status(200).json({ success: true, message: "Blog deleted successfully" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+})
 
 
 
