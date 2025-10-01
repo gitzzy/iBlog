@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { userContext } from "../components/UserContext";
+import Blogs from "../components/Blogs";
 
 export default function Home() {
   const { user, setUser, logout } = useContext(userContext);
@@ -8,10 +9,11 @@ export default function Home() {
 
   return (
     <div className="">
-      <nav className="bg-zinc-700 w-full h-[60px] flex text-white  items-center px-4 gap-4 justify-between">
+      <nav className="bg-zinc-700 w-full h-[60px] flex text-white  items-center px-4 gap-4 justify-between fixed">
         <div className="font-bold text-[24px] flex gap-8">
           <div className="cursor-pointer">Home</div>
-          <di className="cursor-pointer">Dashboard</di>
+          <div className="cursor-pointer">Dashboard</div>
+          <div className="cursor-pointer">MyBlogs</div>
         </div>
         <div className="flex items-center gap-8">
             <div className="text-[18px] cursor-pointer">{name}</div>
@@ -23,6 +25,7 @@ export default function Home() {
           </div>
         </div>
       </nav>
+      <Blogs/>
     </div>
   );
 }

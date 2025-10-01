@@ -79,6 +79,17 @@ app.post('/api/createblog', async (req, res) => {
     res.status(200).json({ success: true, msg: 'Blog posted' })
 })
 
+//sending blogs to frontend
+
+app.get('/api/blogs',async(req,res) => {
+    try{
+        const blogs = await blogModel.find();
+        res.status(200).json({success:true,blogs})
+    }catch (err){
+        res.status(500).json({success:false,message:'server error'})
+    }
+})
+
 
 app.listen(port, () => {
     console.log('Backend is running')
