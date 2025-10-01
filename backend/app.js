@@ -63,13 +63,13 @@ app.post('/api/login', async (req, res) => {
         const token = jwt.sign({ username }, 'secret')
         //http is for security purpose , so that no one can access our cookie
         res.cookie('username', token, { httpOnly: true })
-        res.json({ success: true, message: 'Logged in successfully', username: user.username, name:user.name });
+        res.json({ success: true, message: 'Logged in successfully', username: user.username, name: user.name });
     } catch (err) {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 })
 
-
+//create blog
 app.post('/api/createblog', async (req, res) => {
     const { authorName, authorUsername, title, content } = req.body
     const newBlog = new blogModel({
@@ -79,16 +79,54 @@ app.post('/api/createblog', async (req, res) => {
     res.status(200).json({ success: true, msg: 'Blog posted' })
 })
 
-//sending blogs to frontend
-
-app.get('/api/blogs',async(req,res) => {
-    try{
+//sending blogs to frontend done
+app.get('/api/blogs', async (req, res) => {
+    try {
         const blogs = await blogModel.find();
-        res.status(200).json({success:true,blogs})
-    }catch (err){
-        res.status(500).json({success:false,message:'server error'})
+        res.status(200).json({ success: true, blogs })
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'server error' })
     }
 })
+
+//My blog functionality
+app.get('/api/myblog/:user', async (req, res) => {
+    try {
+        const user = req.params.user
+        const myblog = await blogModel.find({ authorUsername: user }).sort({ createdAt: -1 })
+        res.status(200).json({ success: true, myblog });
+    } catch (err) {
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+})
+
+app.get("/api/blog/:id", async (req, res) => {
+  try {
+    const blog = await blogModel.findById(req.params.id);
+    if (!blog)
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    res.status(200).json({ success: true, blog });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.put("/api/updateblog/:id", async (req, res) => {
+  try {
+    const updatedBlog = await blogModel.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    if (!updatedBlog) return res.status(404).json({ success: false, message: "Blog not found" });
+    res.status(200).json({ success: true, blog: updatedBlog });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+
 
 
 app.listen(port, () => {

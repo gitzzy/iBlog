@@ -1,18 +1,19 @@
 
 import { useEffect, useState } from "react";
-import BlogComp from "./BlogComp";
+import BlogComp from "../components/BlogComp";
 import axios from "axios";
-import Home from "../pages/Home";
+import Home from "./Home";
 
-export default function Blogs() {
+export default function Myblog() {
 const [blogs,setBlog] = useState([]);
+const user = localStorage.getItem('user')
 const backurl = "http://localhost:5001";
  useEffect(() => {
     axios
-    .get(`${backurl}/api/blogs`)
+    .get(`${backurl}/api/myblog/${user}`)
     .then((res) => {
         if (res.data.success) {
-        const sortedBlogs = res.data.blogs.sort(
+        const sortedBlogs = res.data.myblog.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         setBlog(sortedBlogs);

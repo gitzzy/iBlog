@@ -8,19 +8,22 @@ import Signup from "./pages/Signup";
 import { userContext } from "./components/UserContext";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import CreateBlog from "./pages/CreateBlog";
+import Blogs from "./components/Blogs";
+import Myblog from "./pages/Myblog";
+import EditBlog from "./pages/EditBlog";
 
 function App() {
   const [count, setCount] = useState(0);
   const [user, setUser] = useState("");
   const logout = () => {
-    setUser(null)
-    localStorage.setItem('user','')
+    setUser(null);
+    localStorage.setItem("user", "");
   };
 
   return (
     <>
-      <userContext.Provider value={{ user, setUser,logout}}>
+      <userContext.Provider value={{ user, setUser, logout }}>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Login />}></Route>
@@ -29,7 +32,31 @@ function App() {
               path="/api/home"
               element={
                 <ProtectedRoute>
-                  <Home />
+                  <Blogs />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/api/createblog"
+              element={
+                <ProtectedRoute>
+                  <CreateBlog />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/api/myblog/"
+              element={
+                <ProtectedRoute>
+                  <Myblog />
+                </ProtectedRoute>
+              }
+            ></Route>
+            <Route
+              path="/api/editblog/:id"
+              element={
+                <ProtectedRoute>
+                  <EditBlog/>
                 </ProtectedRoute>
               }
             ></Route>
